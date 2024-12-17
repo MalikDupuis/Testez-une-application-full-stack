@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.payload.request;
 
+
 import javax.validation.constraints.NotBlank;
 
 public class LoginRequest {

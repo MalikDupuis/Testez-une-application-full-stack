@@ -1,16 +1,13 @@
 package com.openclassrooms.starterjwt;
 
+import com.openclassrooms.starterjwt.controllers.UserController;
 import com.openclassrooms.starterjwt.dto.UserDto;
 import com.openclassrooms.starterjwt.mapper.UserMapper;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.UserService;
-import com.openclassrooms.starterjwt.controllers.UserController;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,25 +16,25 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class UserControllerTest {
-
+public class UserControllerTestIntegration {
     @MockBean
-    private UserService userService;
+    private UserRepository userRepository; // Mock du repository
 
     @Autowired
-    private UserController userController;
+    private UserService userService; // Service réel
 
-    @MockBean
-    private UserMapper userMapper;
+    @Autowired
+    private UserController userController; // Contrôleur réel
 
     private User user;
-    private UserDto userDto;
 
     @BeforeEach
     void setUp() {
@@ -48,55 +45,49 @@ class UserControllerTest {
         user.setLastName("Doe");
         user.setPassword("password");
         user.setAdmin(false);
-
-        userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setEmail("test@example.com");
-        userDto.setFirstName("John");
-        userDto.setLastName("Doe");
     }
-
-    // Test
-
 
     @Test
     void testFindById_UserExists() {
-        // Arrange
-        when(userService.findById(1L)).thenReturn(user);
-        when(userMapper.toDto(user)).thenReturn(userDto);
+        // Arrange : Simuler la réponse du repository
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        // Act
+        // Act : Appeler la méthode du contrôleur
         ResponseEntity<?> response = userController.findById("1");
 
-        // Assert
+        // Assert : Vérifier les résultats
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
         assertEquals(user.getEmail(), ((UserDto) response.getBody()).getEmail());
+
+        // Vérifier que le repository a été appelé
+        verify(userRepository, times(1)).findById(1L);
     }
 
     @Test
     void testFindById_UserNotFound() {
-        // Arrange
-        when(userService.findById(1L)).thenReturn(null);
+        // Arrange : Simuler un utilisateur non trouvé
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act
+        // Act : Appeler la méthode du contrôleur
         ResponseEntity<?> response = userController.findById("1");
 
-        // Assert
+        // Assert : Vérifier que le code retourne 404
         assertEquals(404, response.getStatusCodeValue());
+
+        // Vérifier que le repository a été appelé
+        verify(userRepository, times(1)).findById(1L);
     }
 
     @Test
     void testFindById_InvalidId() {
-        // Act
+        // Act : Appeler la méthode avec un ID invalide
         ResponseEntity<?> response = userController.findById("invalid");
 
-        // Assert
+        // Assert : Vérifier que le code retourne 400
         assertEquals(400, response.getStatusCodeValue());
+
+        // Vérifier que le repository n'a pas été appelé
+        verify(userRepository, times(0)).findById(anyLong());
     }
-
-
-
-
-
 }

@@ -73,12 +73,12 @@ public class AuthController {
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already taken!"));
         }
-
+    String password = passwordEncoder.encode(signUpRequest.getPassword());
         // Create new user's account
         User user = new User(signUpRequest.getEmail(),
                 signUpRequest.getLastName(),
                 signUpRequest.getFirstName(),
-                passwordEncoder.encode(signUpRequest.getPassword()),
+                password,
                 false);
 
         userRepository.save(user);

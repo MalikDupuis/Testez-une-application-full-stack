@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.payload.response;
 
+
 public class MessageResponse {
   private String message;
 

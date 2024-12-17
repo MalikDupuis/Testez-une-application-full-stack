@@ -3,6 +3,7 @@ package com.openclassrooms.starterjwt.payload.request;
 import javax.validation.constraints.*;
 
 import lombok.Data;
+import lombok.Generated;
 
 @Data
 public class SignupRequest {
