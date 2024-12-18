@@ -2,7 +2,6 @@ package com.openclassrooms.starterjwt;
 
 import com.openclassrooms.starterjwt.controllers.UserController;
 import com.openclassrooms.starterjwt.dto.UserDto;
-import com.openclassrooms.starterjwt.mapper.UserMapper;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.UserService;
@@ -20,11 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class UserControllerTestIntegration {
+public class UserControllerIntegrationTest {
     @MockBean
     private UserRepository userRepository; // Mock du repository
 
